@@ -1,0 +1,79 @@
+{
+  "_nota": "Guardie di correzione per i prompt video. Ogni guardia e' un errore trovato in revisione, trasformato in una regola riutilizzabile: quando il trigger compare nell'azione della clip, il testo viene iniettato nel prompt. Modifica questo file per adattarlo al tuo progetto: il motore (correzioni.py) non va toccato.",
+  "_formato": {
+    "nome": "identificativo breve, usato nei log",
+    "testo": "il testo iniettato nel prompt",
+    "trigger": "lista di parole chiave: se una compare nell'azione, la guardia scatta",
+    "luoghi": "facoltativo: la guardia vale solo in questi luoghi",
+    "luoghi_da_testo": "facoltativo: come 'luoghi', ma dedotti dalle parole dell'azione",
+    "non_trigger": "facoltativo: se una di queste parole compare, la guardia NON scatta",
+    "richiede_gesto": "facoltativo: scatta solo se l'azione non contiene gia' un gesto visibile",
+    "solo_senza_personaggi": "facoltativo: vale solo nelle clip di solo ambiente",
+    "stato": "CHIUSO | ATTIVO | APERTO, per tenere traccia in revisione"
+  },
+  "guardie": [
+    {
+      "nome": "orientamento",
+      "stato": "CHIUSO",
+      "testo": "Orientamento: ogni veicolo e' orientato nella direzione di marcia, con il musetto verso la pista e il davanti che punta dove va. I mezzi restano SULL'ASFALTO, mai sull'erba o fuori dai cordoli, e non sono mai rivolti contro il senso di marcia.",
+      "trigger": ["kart", "monoposto", "vettura", "mezzo", "volante", "pista", "circuito", "griglia", "traguardo", "sorpasso", "curva", "giro", "pilota", "karting", "motore"],
+      "luoghi_da_testo": ["pista", "circuito", "curva", "griglia", "traguardo", "giro", "gara", "sorpasso", "kart", "monoposto", "pit", "asfalto", "cordoli"]
+    },
+    {
+      "nome": "mezzo_canonico",
+      "stato": "ATTIVO",
+      "testo": "Mezzo coerente: il veicolo ha SEMPRE la stessa forma, lo stesso colore e gli stessi dettagli in ogni clip. Non cambia modello, non diventa un altro mezzo, non si trasforma in una monoposto se e' un kart.",
+      "trigger": ["kart", "monoposto", "vettura", "mezzo", "volante", "karting", "motore"]
+    },
+    {
+      "nome": "pilota_dentro",
+      "stato": "CHIUSO",
+      "testo": "Pilota dentro il mezzo: chi guida e' SEDUTO DENTRO il veicolo, con entrambe le mani sul volante. Mai in piedi accanto al mezzo, mai fuori dall'abitacolo mentre il veicolo e' in pista o in movimento.",
+      "trigger": ["guida", "corre", "gara", "pista", "giro veloce", "sorpasso", "curva", "griglia", "traguardo", "insegue", "sbanda", "prova il kart"]
+    },
+    {
+      "nome": "griglia",
+      "stato": "CHIUSO",
+      "testo": "Griglia di partenza: i mezzi sono schierati a scacchiera sfalsata su DUE colonne (uno a destra, il successivo a sinistra), come nelle gare vere. Sull'asfalto ci sono ESATTAMENTE DUE linee bianche di griglia, parallele e trasversali alla pista. Mai tre o piu' linee, mai file allineate una dietro l'altra.",
+      "trigger": ["griglia", "partenza", "schierat", "linee bianche", "via"]
+    },
+    {
+      "nome": "pneumatici",
+      "stato": "ATTIVO",
+      "testo": "Pneumatici: le gomme restano montate sui mezzi. Se una si stacca, si vede il momento esatto in cui si stacca e dove va a finire. Mai gomme sparse a terra senza spiegazione, mai in mucchio, mai che rotolano da sole.",
+      "trigger": ["pneumatic", "gomm", "barriera", "testacoda", "ruota", "ruote"],
+      "luoghi_da_testo": ["pista", "circuito", "curva", "griglia", "traguardo", "giro", "gara", "sorpasso", "kart", "pit", "asfalto", "cordoli"]
+    },
+    {
+      "nome": "azione_leggibile",
+      "stato": "ATTIVO",
+      "testo": "Azione leggibile: la clip mostra un'azione fisica concreta e riconoscibile, un gesto che si vede, con un oggetto e un movimento chiaro. Non una posa statica o una sola espressione del volto: il soggetto fa qualcosa che lo spettatore capisce al primo sguardo.",
+      "trigger": ["sorride", "guarda", "osserva", "annuisce", "ascolta", "pensa", "respira", "tace", "immobile", "fermo"],
+      "richiede_gesto": true
+    },
+    {
+      "nome": "scena_movimento",
+      "stato": "ATTIVO",
+      "testo": "Scena in movimento: il soggetto e' in azione mentre l'inquadratura lo segue, mai un mezzo parcheggiato o fermo al centro del campo se la scena non lo richiede.",
+      "trigger": ["guida", "corre", "sbanda", "scivola", "sorpasso", "insegue", "scatta", "sfreccia", "supera", "gara", "prove libere", "giro", "rientra", "acceler", "frena", "curva", "testacoda", "veloce"]
+    },
+    {
+      "nome": "senza_personaggi",
+      "stato": "CHIUSO",
+      "testo": "Solo ambiente: in questa inquadratura non compare nessuna persona e nessun volto. Nessun casco, nessuna figura umana, nemmeno sullo sfondo o di spalle.",
+      "solo_senza_personaggi": true
+    },
+    {
+      "nome": "telaio_visibile",
+      "stato": "CHIUSO",
+      "testo": "Telaio: quando si smonta o si mostra il mezzo, si vede la struttura portante (telaio, tubi, asse) e non solo la carrozzeria. Il dettaglio meccanico resta leggibile e coerente fra le clip.",
+      "trigger": ["telaio", "chassis", "scheletro del kart", "smonta", "monta"]
+    },
+    {
+      "nome": "bicicletta",
+      "stato": "CHIUSO",
+      "testo": "Bicicletta: la bici ha ruote sottili con raggi, telaio a tubi, manubrio e pedali. Mai ruote larghe da auto, mai motore, mai una forma che assomigli a un mezzo a motore.",
+      "trigger": ["bici", "biciclett", "manubrio", "pedal", "ruote della bici"]
+    }
+  ]
+}
