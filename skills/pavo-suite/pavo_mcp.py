@@ -440,6 +440,131 @@ def chiamata_grezza(metodo: str, percorso: str, corpo_json: str = "") -> dict:
     import json
 
     corpo = None
+
+# --- Canvas: generazione libera per nodi -------------------------------------
+# Il Canvas non ha progetti a copione: si compone una catena di nodi (testo,
+# immagine, video, audio) e ogni nodo vede l'uscita del precedente.
+
+@server.tool(description="I modelli della modalita' Canvas, per tipo di nodo. "
+                         "tipo: 'video', 'immagine', 'audio' o 'testo'. "
+                         "Ogni voce porta i vincoli: durate, rapporti, "
+                         "risoluzioni, modi ammessi.")
+def canvas_modelli(tipo: str = "video") -> list[dict]:
+    import canvas as C
+    return C.modelli(tipo)
+
+
+@server.tool(description="I modi di generazione ammessi da un modello Canvas "
+                         "(text_to_video, reference_image, first_last_frame, "
+                         "video_edit, video_extend...).")
+def canvas_modi(model_code: str) -> dict:
+    import canvas as C
+    m = C.modello(model_code)
+    if not m:
+        return {"ok": False, "errore": f"modello '{model_code}' inesistente"}
+    return {"ok": True, "codice": model_code, "modi": m.get("modi", []),
+            "durate": m.get("durate", []), "rapporti": m.get("rapporti", []),
+            "risoluzioni": m.get("risoluzioni", [])}
+
+
+@server.tool(description="Controlla se dei parametri stanno nei vincoli di un "
+                         "modello Canvas, PRIMA di generare. Restituisce la "
+                         "lista degli errori: vuota vuol dire che va bene.")
+def canvas_valida(model_code: str, durata: int = 0, rapporto: str = "",
+                  risoluzione: str = "", modo: str = "", immagini: int = 0,
+                  caratteri: int = 0) -> dict:
+    import canvas as C
+    errori = C.valida("video", model_code,
+                      durata=durata or None, rapporto=rapporto or None,
+                      risoluzione=risoluzione or None, modo=modo or None,
+                      immagini=immagini or None, caratteri=caratteri or None)
+    return {"ok": not errori, "errori": errori}
+
+
+@server.tool(description="Quali modelli Canvas supportano un certo modo di "
+                         "generazione. Esempio: chi sa allungare un video.")
+def canvas_compatibili(tipo: str, modo: str) -> list[str]:
+    import canvas as C
+    return C.compatibili(tipo, modo)
+
+
+@server.tool(description="Gli stili visivi del Canvas (60), con codice e nome.")
+def canvas_stili() -> list[dict]:
+    import canvas as C
+    return C.stili()
+
+
+@server.tool(description="Le guide ufficiali del Canvas, con il prompt che usa "
+                         "Pavo stesso. Utili come modello di scrittura. "
+                         "tipo: 'video', 'image', 'text' o 'audio'.")
+def canvas_guide(tipo: str = "") -> dict:
+    import canvas as C
+    return C.guide(tipo or None)
+
+
+@server.tool(description="Riscrive un prompt in inglese, piu' dettagliato. "
+                         "Gratis: non consuma crediti.")
+def canvas_migliora_prompt(testo: str) -> dict:
+    import canvas as C
+    return {"ok": True, "prompt": C.migliora(_client(), testo)}
+
+
+@server.tool(description="Traduce un prompt verso il cinese. Nota: la direzione "
+                         "e' sempre en2zh, il parametro di lingua non ha effetto.")
+def canvas_traduciprompt(testo: str) -> dict:
+    import canvas as C
+    return {"ok": True, "testo": C.traduci(_client(), testo)}
+
+
+@server.tool(description="Da un'immagine ricava la descrizione testuale. "
+                         "Serve l'URL dell'immagine, non un testo.")
+def canvas_espandi_descrizione(image_url: str, asset_type: str = "character") -> dict:
+    import canvas as C
+    return {"ok": True, "descrizione": C.espandi(_client(), image_url, asset_type)}
+
+
+@server.tool(description="Annulla una generazione Canvas in corso.")
+def canvas_annulla(corpo_json: str = "") -> dict:
+    import json
+    import canvas as C
+    corpo = json.loads(corpo_json) if corpo_json.strip() else {}
+    return C.annulla(_client(), **corpo)
+
+
+@server.tool(description="Stato di una generazione Canvas. Il Canvas lavora in "
+                         "asincrono: la generazione non e' finita quando la "
+                         "chiamata risponde.")
+def canvas_avanzamento(corpo_json: str = "") -> dict:
+    import json
+    import canvas as C
+    corpo = json.loads(corpo_json) if corpo_json.strip() else {}
+    return C.avanzamento(_client(), **corpo)
+
+
+@server.tool(description="Crea un asset Canvas: personaggio, scena o oggetto. "
+                         "Gli asset sono cio' che tiene coerenti i personaggi "
+                         "tra una clip e l'altra; nel prompt si richiamano "
+                         "con @. tipo: 'characters', 'scenes' o 'props'.")
+def canvas_crea_asset(tipo: str, corpo_json: str) -> dict:
+    import json
+    import canvas as C
+    return C.crea_asset(_client(), tipo, **json.loads(corpo_json))
+
+
+@server.tool(description="Genera il foglio a quattro viste di un personaggio "
+                         "(frontale, profilo, retro, tre quarti). E' il modo "
+                         "per fissare l'aspetto di un personaggio. Consuma "
+                         "crediti.")
+def canvas_quattro_viste(corpo_json: str) -> dict:
+    import json
+    import canvas as C
+    return C.quattro_viste(_client(), **json.loads(corpo_json))
+
+
+def chiamata_grezza(metodo: str, percorso: str, corpo_json: str = "") -> dict:
+    import json
+
+    corpo = None
     if corpo_json.strip():
         try:
             corpo = json.loads(corpo_json)
@@ -452,6 +577,7 @@ def chiamata_grezza(metodo: str, percorso: str, corpo_json: str = "") -> dict:
     except A.PavoError as e:
         return {"ok": False, "http": e.http, "codice": e.codice,
                 "errore": str(e)}
+
 
 
 def main() -> int:

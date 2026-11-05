@@ -1,9 +1,9 @@
 ---
 name: pavo-suite
-description: Use when you need to work with Pavo AI (app.pavo-ai.work) — log in from a fresh OpenHands profile, generate or fix video prompts, apply prompt corrections, drive Pavo from Claude, or check credits, models and projects. Triggers on "Pavo", "pavo-ai", "login Pavo", "sessione Pavo", "token scaduto", "correzioni prompt", "guardie prompt", "genera video Pavo", "MCP Pavo", "skill Pavo".
+description: Use when you need to work with Pavo AI (app.pavo-ai.work) — log in from a fresh OpenHands profile, use Canvas mode (nodes, models, styles, character assets), generate or fix video prompts, apply prompt corrections, drive Pavo from Claude, or check credits, models and projects. Triggers on "Pavo", "pavo-ai", "login Pavo", "sessione Pavo", "token scaduto", "Canvas", "modalita Canvas", "correzioni prompt", "guardie prompt", "genera video Pavo", "MCP Pavo", "skill Pavo".
 ---
 
-# Pavo Suite — login, prompt, correzioni
+# Pavo Suite — login, Canvas, prompt, correzioni
 
 Questa skill e' **autosufficiente**: incollata in un profilo OpenHands nuovo,
 genera i file che le servono e apre il browser per il login. Non da' per scontato
@@ -37,7 +37,7 @@ Poi verifica:
 python3 -c "import sys; sys.path.insert(0,'.'); import pavo_api as A; print(A.saldo(A.Pavo()))"
 ```
 
-## Le tre cose che questa skill fa
+## Le quattro cose che questa skill fa
 
 ### 1. Aprire la sessione (browser + login)
 
@@ -130,7 +130,7 @@ print(p.costo_stimato("seedream4-5"))   # costo vero
 print(A.elenca_progetti(p))             # i progetti
 ```
 
-L'MCP per Claude, con 37 strumenti:
+L'MCP per Claude, con 50 strumenti (37 del flusso a copione + 13 del Canvas):
 
 ```bash
 python3 pavo_mcp.py     # server stdio
@@ -152,6 +152,122 @@ with con_chat("mio_progetto", titolo="Il mio progetto") as chat_id:
 **Non chiamare mai `POST /v1/chat/conversation` direttamente.** Passa da
 `chat_della_serie` o `con_chat`. Se chiedi di aprirne una quando ne esiste gia'
 una, il modulo **rifiuta** e ti dice quale usare.
+
+## Modalita' Canvas
+
+Il Canvas e' il generatore libero: si lavora per **nodi** invece che dentro un
+progetto a copione. Quattro tipi di nodo, e ognuno genera qualcosa:
+
+| nodo | cosa produce | modelli |
+|---|---|---|
+| **Text** | testo, o da qui parte tutto | 9 modelli di testo |
+| **Image** | immagini, anche da altre immagini | 10 |
+| **Video** | video da testo, da immagine, da video | 8 |
+| **Audio** | voce, musica, effetti | 2 |
+
+I nodi si **collegano**: il testo entra nell'immagine, l'immagine entra nel
+video. E' questo che il Canvas ha in piu' del flusso a copione: si costruisce
+una catena e ogni passo vede l'uscita del precedente.
+
+### Le tre modalita' video
+
+| modo | cosa fa |
+|---|---|
+| `text_to_video` | solo dal testo |
+| `reference_image` (Omni Reference) | mescola piu' riferimenti: personaggio + ambiente |
+| `first_last_frame` | primo e ultimo fotogramma: il movimento e' vincolato |
+
+Oltre a queste, alcuni modelli accettano `first_frame`, `reference_video`,
+`video_edit` e `video_extend`.
+
+### I vincoli si leggono, non si indovinano
+
+Ogni modello ha durate, rapporti e risoluzioni suoi. Chiedere 20 secondi a
+`seedance-2-0` e' un errore che costa un giro a vuoto: il modulo lo dice prima.
+
+```python
+import canvas as C
+
+C.modelli("video")                          # tutti i modelli video
+C.compatibili("video", "video_extend")      # chi sa allungare un video
+C.valida("video", "seedance-2-0", durata=20)  # -> ['durata 20s non ammessa (scegli tra 4-15s)']
+C.valida("video", "seedance-2-0", durata=10)  # -> []  tutto bene
+```
+
+Da riga di comando:
+
+```bash
+python3 canvas.py --modelli video
+python3 canvas.py --stili
+python3 canvas.py --guide
+python3 canvas.py --compatibili video video_edit
+python3 canvas.py --aggiorna     # riscarica le specifiche dall'app
+```
+
+Le specifiche stanno in `canvas_specs.json` (20 KB): 8 modelli video, 10
+immagine, 2 audio, 9 di testo, 60 stili, 13 guide. `--aggiorna` le rifa' da
+`GET /pixa/canvas/tool-specs`, cosi' la skill non invecchia.
+
+### Coerenza dei personaggi
+
+E' il problema vero del video generato: lo stesso personaggio cambia faccia tra
+una clip e l'altra. Il Canvas lo risolve con gli **asset**, che nel prompt si
+richiamano con `@`.
+
+```python
+C.crea_asset(p, "characters", name="Mario", description="pilota, casco rosso")
+C.quattro_viste(p, asset_id="...")     # foglio a 4 viste: frontale, profilo, retro, 3/4
+```
+
+Le quattro viste sono il modo per **fissare** un personaggio: da li' in poi lo
+richiami e resta lo stesso. Lo stesso vale per `scenes` (ambienti) e `props`
+(oggetti). Quattro abilita' immagine servono a questo: `character_setting`,
+`character_four_view`, `scene_setting`, `product_setting`.
+
+### Prompt
+
+```python
+C.migliora(p, "un kart che derapa in curva")   # -> inglese, dettagliato
+C.traduci(p, "un kart che derapa in curva")    # -> cinese
+C.espandi(p, url_immagine, tipo_asset="character")  # da immagine a descrizione
+```
+
+**Trappola:** `traduci` **ignora `target_language`**. La direzione e' sempre
+`en2zh`, anche passando `'en'`: la risposta lo dichiara in `direction`. Non
+fidarti del nome del parametro.
+
+**Trappola:** `migliora` e `traduci` vogliono `items`, cioe' una **lista di
+mappe** con discriminatore `type` e il testo in `content`:
+
+```python
+{"items": [{"type": "text", "content": "..."}]}
+```
+
+Con `{"prompt": "..."}` rispondono `400 Items is required`. Sembra un campo
+semplice e non lo e'.
+
+**Trappola:** `espandi` vuole **un'immagine**, non un testo. Chiede
+`asset_type` e `image_url`; senza, `400 AssetType is required`.
+
+### Le guide ufficiali
+
+`GET /pixa/canvas/tool-specs` contiene 13 guide, e ognuna porta il **prompt che
+usa Pavo stesso**. Sono la cosa piu' utile del file: mostrano come formula le
+richieste chi ha costruito l'app. Copiarne la forma funziona meglio che
+inventarne una.
+
+```bash
+python3 canvas.py --guide
+```
+
+Per esempio, per il primo/ultimo fotogramma Pavo usa:
+
+> Image 1 is the first frame, and Image 2 is the last frame. Create a seamless
+> transition from Image 1 to Image 2.
+
+E per l'Omni Reference descrive il movimento **per intero**, passo per passo,
+invece di nominarlo. E' un'indicazione su come scrivere: dire cosa succede,
+non cosa si vuole ottenere.
 
 ## Fatti utili su Pavo
 

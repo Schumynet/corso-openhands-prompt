@@ -1,0 +1,4 @@
+
+# Bytecode Python: non va versionato
+__pycache__/
+*.pyc
