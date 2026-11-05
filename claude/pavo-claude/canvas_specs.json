@@ -1,0 +1,929 @@
+{
+ "versione": "234691493baed263",
+ "nodi": [
+  {
+   "tipo": "",
+   "nome": "Text",
+   "suggerimento": "Write your story, scene, or character description."
+  },
+  {
+   "tipo": "",
+   "nome": "Image",
+   "suggerimento": "Create images from text, or edit images using reference images and prompts."
+  },
+  {
+   "tipo": "",
+   "nome": "Video",
+   "suggerimento": "Describe the video you want to create. Use @ to reference assets."
+  },
+  {
+   "tipo": "",
+   "nome": "Audio",
+   "suggerimento": "Describe the audio effect you want."
+  }
+ ],
+ "modalita_video": [
+  {
+   "codice": "text_to_video",
+   "nome": "Text to Video"
+  },
+  {
+   "codice": "reference_image",
+   "nome": "Omni Reference"
+  },
+  {
+   "codice": "first_last_frame",
+   "nome": "First & Last Frames"
+  }
+ ],
+ "abilita_immagine": [
+  {
+   "codice": "character_setting",
+   "nome": "Character Setting"
+  },
+  {
+   "codice": "character_four_view",
+   "nome": "Character Four View"
+  },
+  {
+   "codice": "scene_setting",
+   "nome": "Scene Setting"
+  },
+  {
+   "codice": "product_setting",
+   "nome": "Product Setting"
+  }
+ ],
+ "video": [
+  {
+   "codice": "agnes-video-new-flash",
+   "nome": "Agnes Video 2.5 Flash",
+   "online": true,
+   "modi": [
+    "text_to_video",
+    "first_frame",
+    "first_last_frame",
+    "reference_image"
+   ],
+   "durate": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ],
+   "rapporti": [
+    "9:16",
+    "3:4",
+    "1:1",
+    "4:3",
+    "16:9",
+    "21:9"
+   ],
+   "risoluzioni": [
+    "hd"
+   ],
+   "ruoli_immagine": [
+    "first_frame",
+    "last_frame",
+    "reference"
+   ],
+   "max_immagini": 5,
+   "max_caratteri": null
+  },
+  {
+   "codice": "agnes-video-new",
+   "nome": "Agnes Video 2.5",
+   "online": true,
+   "modi": [
+    "text_to_video",
+    "first_frame",
+    "first_last_frame",
+    "reference_image",
+    "reference_video"
+   ],
+   "durate": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ],
+   "rapporti": [
+    "9:16",
+    "3:4",
+    "1:1",
+    "4:3",
+    "16:9",
+    "21:9"
+   ],
+   "risoluzioni": [
+    "fhd",
+    "hd",
+    "qhd"
+   ],
+   "ruoli_immagine": [
+    "first_frame",
+    "last_frame",
+    "reference"
+   ],
+   "max_immagini": 8,
+   "max_caratteri": null
+  },
+  {
+   "codice": "minimax-h3",
+   "nome": "MiniMax H3",
+   "online": true,
+   "modi": [
+    "text_to_video",
+    "first_frame",
+    "first_last_frame",
+    "reference_image",
+    "reference_video"
+   ],
+   "durate": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "rapporti": [
+    "9:16",
+    "3:4",
+    "1:1",
+    "4:3",
+    "16:9",
+    "21:9"
+   ],
+   "risoluzioni": [
+    "fhd",
+    "hd",
+    "qhd",
+    "uhd"
+   ],
+   "ruoli_immagine": [
+    "first_frame",
+    "last_frame",
+    "reference"
+   ],
+   "max_immagini": 9,
+   "max_caratteri": 7000
+  },
+  {
+   "codice": "seedance-2-5",
+   "nome": "Seedance 2.5",
+   "online": true,
+   "modi": [
+    "text_to_video",
+    "first_frame",
+    "first_last_frame",
+    "reference_image",
+    "reference_video",
+    "video_edit",
+    "video_extend"
+   ],
+   "durate": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30
+   ],
+   "rapporti": [
+    "9:16",
+    "3:4",
+    "1:1",
+    "4:3",
+    "16:9",
+    "21:9"
+   ],
+   "risoluzioni": [
+    "fhd",
+    "hd",
+    "sd"
+   ],
+   "ruoli_immagine": [
+    "first_frame",
+    "last_frame",
+    "reference"
+   ],
+   "max_immagini": 30,
+   "max_caratteri": 15000
+  },
+  {
+   "codice": "seedance-2-0",
+   "nome": "Seedance 2.0",
+   "online": true,
+   "modi": [
+    "text_to_video",
+    "first_frame",
+    "first_last_frame",
+    "reference_image",
+    "reference_video",
+    "video_edit"
+   ],
+   "durate": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "rapporti": [
+    "9:16",
+    "3:4",
+    "1:1",
+    "4:3",
+    "16:9",
+    "21:9"
+   ],
+   "risoluzioni": [
+    "fhd",
+    "hd",
+    "sd",
+    "uhd"
+   ],
+   "ruoli_immagine": [
+    "first_frame",
+    "last_frame",
+    "reference"
+   ],
+   "max_immagini": 9,
+   "max_caratteri": 5000
+  },
+  {
+   "codice": "seedance-2-0-fast",
+   "nome": "Seedance 2.0 Fast",
+   "online": true,
+   "modi": [
+    "text_to_video",
+    "first_frame",
+    "first_last_frame",
+    "reference_image",
+    "reference_video",
+    "video_edit"
+   ],
+   "durate": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "rapporti": [
+    "9:16",
+    "3:4",
+    "1:1",
+    "4:3",
+    "16:9",
+    "21:9"
+   ],
+   "risoluzioni": [
+    "hd",
+    "sd"
+   ],
+   "ruoli_immagine": [
+    "first_frame",
+    "last_frame",
+    "reference"
+   ],
+   "max_immagini": 9,
+   "max_caratteri": 5000
+  },
+  {
+   "codice": "seedance-2-0-mini",
+   "nome": "Seedance 2.0 Mini",
+   "online": true,
+   "modi": [
+    "text_to_video",
+    "first_frame",
+    "first_last_frame",
+    "reference_image",
+    "reference_video",
+    "video_edit"
+   ],
+   "durate": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "rapporti": [
+    "9:16",
+    "3:4",
+    "1:1",
+    "4:3",
+    "16:9",
+    "21:9"
+   ],
+   "risoluzioni": [
+    "hd",
+    "sd"
+   ],
+   "ruoli_immagine": [
+    "first_frame",
+    "last_frame",
+    "reference"
+   ],
+   "max_immagini": 9,
+   "max_caratteri": 5000
+  },
+  {
+   "codice": "happyhorse-1-1",
+   "nome": "HappyHorse 1.1",
+   "online": true,
+   "modi": [
+    "text_to_video",
+    "first_frame",
+    "reference_image"
+   ],
+   "durate": [
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "rapporti": [
+    "9:21",
+    "9:16",
+    "3:4",
+    "4:5",
+    "1:1",
+    "5:4",
+    "4:3",
+    "16:9",
+    "21:9"
+   ],
+   "risoluzioni": [
+    "hd",
+    "uhd"
+   ],
+   "ruoli_immagine": [
+    "first_frame",
+    "reference"
+   ],
+   "max_immagini": 9,
+   "max_caratteri": null
+  }
+ ],
+ "immagine": [
+  {
+   "codice": "agnes-image",
+   "nome": "Agnes Image 2.5 Flash",
+   "online": true,
+   "modi": [],
+   "max_caratteri": null
+  },
+  {
+   "codice": "gpt-image-2",
+   "nome": "GPT Image 2",
+   "online": true,
+   "modi": [],
+   "max_caratteri": null
+  },
+  {
+   "codice": "seedream5-0-pro",
+   "nome": "Seedream 5.0 Pro",
+   "online": true,
+   "modi": [],
+   "max_caratteri": null
+  },
+  {
+   "codice": "seedream5-0",
+   "nome": "Seedream 5.0 Lite",
+   "online": true,
+   "modi": [],
+   "max_caratteri": null
+  },
+  {
+   "codice": "seedream4-5",
+   "nome": "Seedream 4.5",
+   "online": true,
+   "modi": [],
+   "max_caratteri": null
+  },
+  {
+   "codice": "qwen-image-3-pro",
+   "nome": "Qwen Image 3 Pro",
+   "online": true,
+   "modi": [],
+   "max_caratteri": null
+  },
+  {
+   "codice": "qwen-image-3",
+   "nome": "Qwen Image 3",
+   "online": true,
+   "modi": [],
+   "max_caratteri": null
+  },
+  {
+   "codice": "nano2",
+   "nome": "NanoBanana 2",
+   "online": true,
+   "modi": [],
+   "max_caratteri": null
+  },
+  {
+   "codice": "nano2-lite",
+   "nome": "NanoBanana 2 Lite",
+   "online": true,
+   "modi": [],
+   "max_caratteri": null
+  },
+  {
+   "codice": "nanopro",
+   "nome": "NanoBanana Pro",
+   "online": true,
+   "modi": [],
+   "max_caratteri": null
+  }
+ ],
+ "audio": [
+  {
+   "codice": "seed-audio-1-0",
+   "nome": "Seed Audio 1.0",
+   "online": true,
+   "modi": [
+    "text_to_speech",
+    "reference_audio",
+    "reference_image"
+   ],
+   "max_caratteri": 2048
+  },
+  {
+   "codice": "minimax-music-3-0",
+   "nome": "MiniMax Music 3.0",
+   "online": true,
+   "modi": [
+    "text_to_music",
+    "text_to_instrumental"
+   ],
+   "max_caratteri": 2000
+  }
+ ],
+ "stili": [
+  {
+   "codice": "2D_common_chinese_anime_style",
+   "nome": "2D common chinese anime style"
+  },
+  {
+   "codice": "2D_black_and_white_comic_animation_style",
+   "nome": "2D black-and-white comic animation style"
+  },
+  {
+   "codice": "美式漫画_new",
+   "nome": "American comic style_new"
+  },
+  {
+   "codice": "2D_oriental_ink-wash_style",
+   "nome": "2D oriental ink-wash style"
+  },
+  {
+   "codice": "2D_japanese_flat_art_style",
+   "nome": "2D Japanese flat art style"
+  },
+  {
+   "codice": "2D_cyberpunk_digital_illustration_style",
+   "nome": "2D cyberpunk digital illustration style"
+  },
+  {
+   "codice": "2D_90s_japanese_anime",
+   "nome": "2D 90s japanese anime"
+  },
+  {
+   "codice": "2D_katsuhiro_otomo_style",
+   "nome": "2D Katsuhiro Otomo style"
+  },
+  {
+   "codice": "2D_pixel_art_style",
+   "nome": "2D pixel art style"
+  },
+  {
+   "codice": "2D_cartoon_illustration_style_from_the_osamu_tezuka_era",
+   "nome": "2D cartoon illustration style from the osamu tezuka era"
+  },
+  {
+   "codice": "2D_two-dimensional_anime",
+   "nome": "2D_two-dimensional_anime"
+  },
+  {
+   "codice": "2D_hayao_miyazaki's_art_style",
+   "nome": "2D Hayao Miyazaki's art style"
+  },
+  {
+   "codice": "2D_American_comic_animation_illustration_style",
+   "nome": "2D American comic animation illustration style"
+  },
+  {
+   "codice": "2D_Shanghai_animation_film_studio_classic_style",
+   "nome": "2D Shanghai animation film studio classic style"
+  },
+  {
+   "codice": "2D_children's_stick_figure_style",
+   "nome": "2D children's stick figure style"
+  },
+  {
+   "codice": "2D_Japanese_shōjo_anime",
+   "nome": "2D Japanese shōjo anime"
+  },
+  {
+   "codice": "2D_loose_contour_sketch_aesthetic",
+   "nome": "2D Loose contour sketch aesthetic"
+  },
+  {
+   "codice": "2D_chinese_guofeng",
+   "nome": "2D chinese guofeng"
+  },
+  {
+   "codice": "2D_mature_urban_romance",
+   "nome": "2D mature urban romance"
+  },
+  {
+   "codice": "2D_black_and_white_ink_wash_style",
+   "nome": "2D black and white ink wash style"
+  },
+  {
+   "codice": "2D_Chinese_mythology_style",
+   "nome": "2D chinese mythology style"
+  },
+  {
+   "codice": "2D_children's_crayon-hand-drawn_illustration_style",
+   "nome": "2D children's crayon hand-drawn illustration style"
+  },
+  {
+   "codice": "2D_shadow_play_illustration_style",
+   "nome": "2D shadow play illustration style"
+  },
+  {
+   "codice": "photorealistic_3D_CG_in_the_Xianxia_style",
+   "nome": "photorealistic 3D CG in the Xianxia style"
+  },
+  {
+   "codice": "3D古风国漫_new",
+   "nome": "3D ancient Chinese donghua_new"
+  },
+  {
+   "codice": "3D次世代华奢幻想",
+   "nome": "3D Next-Gen Luxurious Chinese Fantasy"
+  },
+  {
+   "codice": "2D_dark_fantasy_style",
+   "nome": "2D dark fantasy style"
+  },
+  {
+   "codice": "2D_American_3A_game_concept_art_style",
+   "nome": "2D American 3A game concept art style"
+  },
+  {
+   "codice": "3D_UE5_realistic_rendering",
+   "nome": "3D UE5 realistic rendering"
+  },
+  {
+   "codice": "3D_Disney_animation_style",
+   "nome": "3D Disney animation style"
+  },
+  {
+   "codice": "3D_fruit-person_style",
+   "nome": "3D fruit person style"
+  },
+  {
+   "codice": "3D_game_rendering_style",
+   "nome": "3D game rendering style"
+  },
+  {
+   "codice": "3D_Claymation_style",
+   "nome": "3D Claymation style"
+  },
+  {
+   "codice": "3D_clay_stopmotion",
+   "nome": "3D clay stopmotion"
+  },
+  {
+   "codice": "realpeople_1990s_realist_film_style",
+   "nome": "realpeople 1990s realist film style"
+  },
+  {
+   "codice": "realpeople_american_retro_hollywood",
+   "nome": "realpeople american retro hollywood"
+  },
+  {
+   "codice": "realpeople_ancient-style_xianxia_romance",
+   "nome": "realpeople ancient-style xianxia romance"
+  },
+  {
+   "codice": "realpeople_urban_romance_style",
+   "nome": "realpeople urban romance style"
+  },
+  {
+   "codice": "realpeople_ethereal_soft-light_ancient_romance_vibe",
+   "nome": "realpeople ethereal soft-light ancient romance vibe"
+  },
+  {
+   "codice": "realpeople_80s_Chinese_rural _film _style",
+   "nome": "realpeople 80s Chinese ural  film style"
+  },
+  {
+   "codice": "realpeople_90s_Hong_Kong_film_style",
+   "nome": "90s Hong Kong film style"
+  },
+  {
+   "codice": "realpeople_Korean_drama_movie-level_romantic_realism_style",
+   "nome": "realpeople Korean drama movie-level romantic realism style"
+  },
+  {
+   "codice": "realpeople_American_economic_upturn_style",
+   "nome": "realpeople American economic upturn style"
+  },
+  {
+   "codice": "realpeople_American_vintage_film_and_television_style",
+   "nome": "realpeople American vintage film and television style"
+  },
+  {
+   "codice": "realpeople_black-and-white_film_photography_style",
+   "nome": "realpeople black-and-white film photography style"
+  },
+  {
+   "codice": "realpeople_blue-orange_cinematic_style",
+   "nome": "realpeople blue-orange cinematic style"
+  },
+  {
+   "codice": "realpeople_absurd_high-key_white-toned_film_style",
+   "nome": "realpeople absurd high-key white-toned film style"
+  },
+  {
+   "codice": "realpeople_suspense_movie_style",
+   "nome": "realpeople suspense movie style"
+  },
+  {
+   "codice": "realpeople_quentin_tarantino's_celluloid _film_style",
+   "nome": "realpeople Quentin Tarantino's celluloid film style"
+  },
+  {
+   "codice": "realpeople_american_retro-futurism",
+   "nome": "realpeople American retro-futurism"
+  },
+  {
+   "codice": "realpeople_russian_melancholic_cinema",
+   "nome": "realpeople Russian melancholic cinema"
+  },
+  {
+   "codice": "realpeople_kore-eda's_japanese_documentary",
+   "nome": "realpeople kore-eda's japanese documentary"
+  },
+  {
+   "codice": "realpeople_korean_cold_aesthetic_film_style",
+   "nome": "realpeople korean cold aesthetic film style"
+  },
+  {
+   "codice": "realpeople_retro_war_film_style",
+   "nome": "realpeople retro war film style"
+  },
+  {
+   "codice": "realpeople_horror_film_style",
+   "nome": "realpeople horror film style"
+  },
+  {
+   "codice": "realpeople_cold_and_ruthless_court_intrigue",
+   "nome": "realpeople cold and ruthless court intrigue"
+  },
+  {
+   "codice": "realpeople_wilderness_film_style",
+   "nome": "realpeople wilderness film style"
+  },
+  {
+   "codice": "realpeople_60s_retro_sci-fi",
+   "nome": "realpeople 60s retro sci-fi"
+  },
+  {
+   "codice": "中国民国时期风格",
+   "nome": "Republic of China era style"
+  },
+  {
+   "codice": "realpeople_ancient_chinese",
+   "nome": "realpeople ancient chinese"
+  }
+ ],
+ "guide": {
+  "audio": [
+   {
+    "codice": "node_audio_guide_copy",
+    "nome": "Voice Cloning",
+    "prompt_ufficiale": "Using the voice from the input audio, read the following text: How does this voice sound?"
+   },
+   {
+    "codice": "node_audio_guide_BGM",
+    "nome": "Generate BGM",
+    "prompt_ufficiale": "Generate a BGM with an ancient, mysterious atmosphere."
+   },
+   {
+    "codice": "node_audio_guide_fx",
+    "nome": "Generate Sound Effects",
+    "prompt_ufficiale": "Generate a cute, dreamy, and whimsical magical sound effect. A light sparkling magical energy gently appears, accompanied by delicate twinkling star sounds, soft crystal chimes, and a subtle rising series of bright “ting” notes. Add a brief swirling and spreading sound of magical particles, as if tiny glowing stardust is shimmering through the air. The overall tone should be bright, sweet, playful, and enchanting, with a soft fairy-tale and comforting feeling. Keep it light and delicate rather than epic or powerful. End with one clear, cute crystal “ding” to signal that the magic is complete. No horror, no heavy bass, no explosions, and no combat-like sound effects."
+   }
+  ],
+  "image": [
+   {
+    "codice": "guide_image_image",
+    "nome": "Image to Image",
+    "prompt_ufficiale": null
+   },
+   {
+    "codice": "guide_char_four_views",
+    "nome": "Character Four Views",
+    "prompt_ufficiale": "Create a four-view character sheet based on the input."
+   },
+   {
+    "codice": "guide_sence_set",
+    "nome": "Scene Design Sheet",
+    "prompt_ufficiale": "Create a scene concept sheet based on the input."
+   }
+  ],
+  "text": [
+   {
+    "codice": "guide_text_exit",
+    "nome": "Write Yourself",
+    "prompt_ufficiale": "Write Yourself"
+   },
+   {
+    "codice": "script_generation",
+    "nome": "Generate Script with One Sentence",
+    "prompt_ufficiale": "Generate a script based on the input"
+   },
+   {
+    "codice": "guide_text_image",
+    "nome": "Text to Image",
+    "prompt_ufficiale": "Generate an image based on the input"
+   },
+   {
+    "codice": "guide_text_video",
+    "nome": "Text to Video",
+    "prompt_ufficiale": "Generate a video based on the input"
+   },
+   {
+    "codice": "image_to_prompt",
+    "nome": "Image to Prompt",
+    "prompt_ufficiale": "Generate a structured prompt based on the image, including subject, environment, lighting, camera language, and style keywords."
+   }
+  ],
+  "video": [
+   {
+    "codice": "guide_first_last_frames",
+    "nome": "First & Last Frames",
+    "prompt_ufficiale": "Image 1 is the first frame, and Image 2 is the last frame. Create a seamless transition from Image 1 to Image 2."
+   },
+   {
+    "codice": "guide_omni",
+    "nome": "Omni Reference",
+    "prompt_ufficiale": "The girl from Image 1 is standing in the room shown in Image 2. After noticing a potted flower on the floor, she naturally bends down and gently picks it up with both hands. She then stands up, walks toward the window, carefully places the flowerpot on the windowsill, and lightly adjusts its position. The entire sequence of movements is smooth, natural, continuous, and realistic. Cheerful, upbeat music plays in the background. As she arranges the flowerpot, the girl is in a happy mood and softly hums along, naturally matching the rhythm and atmosphere of the music. The overall scene feels warm, relaxed, and comforting, with subtle and natural character movements."
+   }
+  ]
+ },
+ "modelli_testo": [
+  {
+   "codice": "agnes-2.5-flash",
+   "nome": "Agnes 2.5 Flash",
+   "crediti_100_caratteri": 2,
+   "ingressi": [
+    "text",
+    "image"
+   ]
+  },
+  {
+   "codice": "agnes-2.5-pro",
+   "nome": "Agnes 2.5 Pro",
+   "crediti_100_caratteri": 2,
+   "ingressi": [
+    "text",
+    "image"
+   ]
+  },
+  {
+   "codice": "agnes-3.0-flash",
+   "nome": "agnes-3.0-flash",
+   "crediti_100_caratteri": 2,
+   "ingressi": [
+    "text",
+    "image"
+   ]
+  },
+  {
+   "codice": "deepseek-v4.1-flash",
+   "nome": "DeepSeek V4.1 Flash",
+   "crediti_100_caratteri": 2,
+   "ingressi": [
+    "text"
+   ]
+  },
+  {
+   "codice": "deepseek-v4-pro",
+   "nome": "DeepSeek V4 Pro",
+   "crediti_100_caratteri": 2,
+   "ingressi": [
+    "text"
+   ]
+  },
+  {
+   "codice": "dola-seed-2-1-turbo-260628",
+   "nome": "Dola Seed 2.1 Turbo",
+   "crediti_100_caratteri": 2,
+   "ingressi": [
+    "text"
+   ]
+  },
+  {
+   "codice": "gemini-3.5-flash",
+   "nome": "Gemini 3.5 Flash",
+   "crediti_100_caratteri": 2,
+   "ingressi": [
+    "text",
+    "image"
+   ]
+  },
+  {
+   "codice": "glm-5",
+   "nome": "GLM-5",
+   "crediti_100_caratteri": 2,
+   "ingressi": [
+    "text"
+   ]
+  },
+  {
+   "codice": "gemini-3-flash-preview",
+   "nome": "Gemini 3 Flash Preview",
+   "crediti_100_caratteri": 2,
+   "ingressi": [
+    "text",
+    "image"
+   ]
+  }
+ ]
+}

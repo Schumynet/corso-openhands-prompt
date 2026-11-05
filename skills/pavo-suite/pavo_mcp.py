@@ -432,14 +432,6 @@ def rinnova_token() -> dict:
             "errore": (esito.stderr or "")[-300:] if esito.returncode else ""}
 
 
-@server.tool(description="Chiamata grezza a un endpoint Pavo. Usala solo se "
-                         "uno strumento dedicato non esiste: molti endpoint "
-                         "non sono documentati. Passa metodo, percorso e "
-                         "corpo JSON.")
-def chiamata_grezza(metodo: str, percorso: str, corpo_json: str = "") -> dict:
-    import json
-
-    corpo = None
 
 # --- Canvas: generazione libera per nodi -------------------------------------
 # Il Canvas non ha progetti a copione: si compone una catena di nodi (testo,
@@ -561,6 +553,10 @@ def canvas_quattro_viste(corpo_json: str) -> dict:
     return C.quattro_viste(_client(), **json.loads(corpo_json))
 
 
+@server.tool(description="Chiamata grezza a un endpoint Pavo. Usala solo se "
+                         "uno strumento dedicato non esiste: molti endpoint "
+                         "non sono documentati. Passa metodo, percorso e "
+                         "corpo JSON.")
 def chiamata_grezza(metodo: str, percorso: str, corpo_json: str = "") -> dict:
     import json
 

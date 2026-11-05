@@ -124,10 +124,10 @@ vincoli. Il contrario confonde le priorita'.
 import pavo_api as A
 
 p = A.Pavo()
-print(p.saldo())                        # crediti
-print(A.modelli(p, "image"))            # 15 modelli immagine
-print(p.costo_stimato("seedream4-5"))   # costo vero
-print(A.elenca_progetti(p))             # i progetti
+print(A.saldo(p))                                  # crediti
+print(A.modelli(p))                                # 25 modelli
+print(A.costo_stimato(p, "seedream4-5", "image"))  # costo vero
+print(A.elenca_progetti(p))                        # i progetti
 ```
 
 L'MCP per Claude, con 50 strumenti (37 del flusso a copione + 13 del Canvas):

@@ -51,24 +51,34 @@ APP_ORIGIN = "https://app.pavo-ai.work/"
 
 
 def _trova_stato() -> Path:
-    """Il file di sessione, risalendo fino alla cartella che contiene `pavo_login`.
+    """Il file di sessione.
 
-    Non si contano i livelli: questo modulo puo' stare in radice oppure dentro
-    `.agents/skills/<nome>/`, e i livelli cambierebbero. Si cerca la cartella
-    `pavo_login`, che e' unica e non ambigua — a differenza di `runtime.py`, di
-    cui esiste una copia anche dentro la skill.
+    Si guarda **prima accanto a questo modulo**, perche' e' li' che `login.py`
+    scrive: cercare solo risalendo l'albero rischia di trovare un `pavo_login`
+    estraneo piu' in alto, e allora il login funzionerebbe e ogni strumento
+    direbbe "sessione assente". Solo se accanto non c'e' niente si risale, per
+    il layout di OpenHands dove il modulo sta in `.agents/skills/<nome>/` e
+    `pavo_login` sta nella radice del progetto.
     """
     if os.environ.get("PAVO_STATO"):
         return Path(os.environ["PAVO_STATO"]).expanduser()
-    d = Path(__file__).resolve().parent
-    for _ in range(8):
-        candidato = d / "pavo_login"
-        if candidato.is_dir():
-            return candidato / "pavo_state.json"
-        if d.parent == d:
-            break
-        d = d.parent
-    return Path(__file__).resolve().parent.parent / "pavo_login" / "pavo_state.json"
+
+    qui = Path(__file__).resolve().parent
+    accanto = qui / "pavo_login" / "pavo_state.json"
+    if accanto.is_file():
+        return accanto
+
+    # Risalita solo nel layout di OpenHands (`.agents/skills/<nome>/`), dove
+    # `pavo_login` sta nella radice del progetto. Fuori da li' non si risale:
+    # un `pavo_login` trovato per caso piu' in alto non e' il nostro.
+    if qui.parent.name == "skills" and qui.parent.parent.name == ".agents":
+        d = qui.parent.parent.parent
+        candidato = d / "pavo_login" / "pavo_state.json"
+        if candidato.is_file():
+            return candidato
+        return d / "pavo_login" / "pavo_state.json"
+
+    return accanto
 
 
 STATO_SESSIONE = _trova_stato()
@@ -97,9 +107,14 @@ def leggi_token(percorso: Path | None = None) -> str:
     """
     percorso = percorso or STATO_SESSIONE
     if not percorso.is_file():
+        # Il nome dello script cambia fra i due pacchetti: `login.py` per
+        # Claude, `prepara.sh`/`salva_sessione.py` per OpenHands.
+        aiuto = "esegui login.py"
+        if not (Path(__file__).resolve().parent / "login.py").is_file():
+            aiuto = "esegui bash prepara.sh --avvia"
         raise PavoError(
             f"file di sessione assente: {percorso}. "
-            "Serve fare il login dal browser (pavo_login/save_session.py).")
+            f"Serve fare il login dal browser: {aiuto}.")
     dati = json.loads(percorso.read_text(encoding="utf-8"))
     for origine in dati.get("origins", []):
         for voce in origine.get("localStorage", []):

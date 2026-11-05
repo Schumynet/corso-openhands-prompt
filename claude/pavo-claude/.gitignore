@@ -1,0 +1,4 @@
+# La sessione contiene token e cookie: e' una credenziale, non va versionata.
+pavo_login/
+__pycache__/
+*.pyc

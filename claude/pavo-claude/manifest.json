@@ -1,0 +1,35 @@
+{
+  "manifest_version": "0.3",
+  "name": "pavo",
+  "display_name": "Pavo AI",
+  "version": "1.0.0",
+  "description": "Usa Pavo AI da Claude: login dal tuo browser, Canvas (nodi, modelli, stili, asset), prompt e correzioni.",
+  "long_description": "Apre il tuo browser per il login a Pavo, poi espone 50 strumenti: crediti, modelli, Canvas (testo, immagine, video, audio), coerenza dei personaggi con le quattro viste, correzioni dei prompt, flusso a copione. Il token resta sulla tua macchina in pavo_login/pavo_state.json: non passa da Claude e non va su nessun server.",
+  "author": {"name": "Schumynet"},
+  "server": {
+    "type": "python",
+    "entry_point": "pavo_mcp.py",
+    "mcp_config": {
+      "command": "python3",
+      "args": ["${__dirname}/pavo_mcp.py"],
+      "env": {"PAVO_MCP": "1"}
+    }
+  },
+  "tools": [
+    {"name": "token_stato", "description": "Il token e' valido? Quando scade?"},
+    {"name": "rinnova_token", "description": "Rifa' il login aprendo il browser"},
+    {"name": "saldo_crediti", "description": "Quanti crediti restano"},
+    {"name": "canvas_modelli", "description": "I modelli del Canvas, con i vincoli"},
+    {"name": "canvas_valida", "description": "I parametri stanno nei vincoli?"},
+    {"name": "canvas_guide", "description": "Le guide ufficiali di Pavo"},
+    {"name": "canvas_crea_asset", "description": "Crea personaggio, scena o oggetto"},
+    {"name": "canvas_quattro_viste", "description": "Foglio a 4 viste di un personaggio"},
+    {"name": "canvas_migliora_prompt", "description": "Riscrive un prompt in inglese"},
+    {"name": "elenca_modelli", "description": "I modelli del flusso a copione"},
+    {"name": "chiamata_grezza", "description": "Qualsiasi endpoint Pavo"}
+  ],
+  "user_config": {},
+  "keywords": ["pavo", "video", "canvas", "aigc", "prompt"],
+  "license": "MIT",
+  "compatibility": {"platforms": ["darwin", "win32", "linux"]}
+}
