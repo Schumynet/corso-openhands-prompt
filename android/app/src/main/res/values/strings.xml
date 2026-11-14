@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Pavo MCP</string>
+
+    <!-- Schermata principale -->
+    <string name="titolo_login">Sessione Pavo</string>
+    <string name="titolo_server">Server MCP</string>
+    <string name="titolo_indirizzo">Indirizzo per il client MCP</string>
+    <string name="titolo_token">Token di accoppiamento</string>
+
+    <string name="entra">Entra in Pavo</string>
+    <string name="esci">Dimentica la sessione</string>
+    <string name="avvia_server">Accendi il server</string>
+    <string name="ferma_server">Spegni il server</string>
+    <string name="copia">Copia configurazione</string>
+    <string name="copiato">Copiato</string>
+    <string name="rete_locale">Raggiungibile dalla rete locale</string>
+
+    <string name="login_assente">Nessuna sessione. Entra in Pavo per cominciare.</string>
+    <string name="login_valido">Sessione valida fino al %1$s</string>
+    <string name="login_scaduto">Sessione scaduta il %1$s. Serve rifare il login.</string>
+    <string name="login_gia_fatto">Sessione gia\'\u0027 presente.</string>
+    <string name="login_in_corso">In attesa del login su:\n%1$s</string>
+    <string name="login_riuscito">Login riuscito. Sessione valida fino al %1$s</string>
+    <string name="chiudi">Chiudi</string>
+    <string name="login_annullato">Login non completato: nessun token trovato.</string>
+
+    <string name="server_acceso">Acceso sulla porta %1$d (%2$s)</string>
+    <string name="server_spento">Spento</string>
+    <string name="server_attivo">Server acceso sulla porta %1$d</string>
+    <string name="server_errore">Il server non e\' partito: %1$s</string>
+    <string name="indirizzo_ignoto">Nessuna rete: collega il telefono al Wi-Fi</string>
+    <string name="trattino">—</string>
+
+    <string name="canale_nome">Server Pavo</string>
+    <string name="canale_descrizione">Tiene acceso il server MCP di Pavo.</string>
+
+    <string name="nota_sicurezza">Il token di accoppiamento serve a impedire che altri sulla stessa rete usino Pavo al posto tuo. Tienilo per te.</string>
+    <string name="nota_password">La password la digiti solo tu, dentro la finestra di login: l\'app non la vede e non la conserva.</string>
+</resources>

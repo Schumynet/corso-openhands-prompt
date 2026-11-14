@@ -1,0 +1,10 @@
+# Compilazione
+out/
+build/
+.gradle/
+local.properties
+*.iml
+.idea/
+
+# APK: si rigenerano con compila.sh, non servono nel repository
+app/build/outputs/
