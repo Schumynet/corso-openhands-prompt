@@ -23,6 +23,7 @@
     <string name="login_in_corso">In attesa del login su:\n%1$s</string>
     <string name="login_riuscito">Login riuscito. Sessione valida fino al %1$s</string>
     <string name="chiudi">Chiudi</string>
+    <string name="login_google">Completa l\'accesso con Google nella finestra.</string>
     <string name="vista_pc">Vista da computer (serve per entrare)</string>
     <string name="login_annullato">Login non completato: nessun token trovato.</string>
 

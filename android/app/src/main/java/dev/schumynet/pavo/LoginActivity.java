@@ -2,9 +2,12 @@ package dev.schumynet.pavo;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Message;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
@@ -24,28 +27,22 @@ import java.util.Map;
 /**
  * Il login, dentro l'app.
  *
- * L'utente entra in Pavo nel WebView; quando il token compare nel
- * {@code localStorage}, lo leggiamo e lo salviamo. La password resta nel
- * WebView: non la vediamo e non la conserviamo.
+ * L'utente entra in Pavo; quando il token compare nel {@code localStorage}, lo
+ * leggiamo e lo salviamo. La password resta nel browser: non la vediamo e non la
+ * conserviamo.
  *
  * La pagina si presenta come su un computer. Serve: da telefono Pavo mostra la
  * versione mobile, che rimanda alla pagina di scaricamento della sua app invece
- * di far entrare. Con la vista da PC si entra direttamente.
+ * di far entrare. Lo user-agent da solo non basta, perche' il layout lo decide
+ * la larghezza del viewport: si impone anche quella.
  *
- * Lo user-agent da solo non basta. La pagina sceglie il layout dalla larghezza
- * del viewport, e su un telefono quella larghezza e' stretta: il sito capisce
- * comunque di essere su un telefono. Quindi si impone anche una larghezza da
- * portatile, e il WebView rimpicciolisce il risultato per farlo stare nello
- * schermo.
+ * L'accesso si fa con Google. Pavo usa la libreria di Google, che apre il
+ * consenso in una FINESTRA NUOVA ({@code window.open}). Senza gestire quella
+ * finestra, il tocco sul pulsante non apre niente. Per questo c'e'
+ * {@code onCreateWindow}: apre il popup in una finestra dentro l'app.
  *
- * Due cose che rompono l'OAuth dentro una WebView, e come le affrontiamo:
- *
- * 1. Google rifiuta il login se lo user-agent contiene "wv" (WebView).
- * 2. I cookie di terze parti servono al flusso OAuth. Senza, il login si
- *    interrompe a meta'.
- *
- * L'interruttore in basso spegne la vista da PC, se un passaggio del login si
- * comportasse male in quella modalita'.
+ * Le due finestre condividono la memoria del browser, quindi quando il popup
+ * finisce il login il token si trova gia' li' e la finestra principale lo legge.
  */
 public class LoginActivity extends Activity {
 
@@ -56,9 +53,13 @@ public class LoginActivity extends Activity {
     private boolean salvato;
     private String uaMobile;
 
+    /** La finestra del popup di Google, quando e' aperta. */
+    private WebView popup;
+    private Dialog finestraPopup;
+
     private static final String AVVIO = "https://app.pavo-ai.work/";
 
-@SuppressLint({"SetJavaScriptEnabled", "AddJavascriptInterface"})
+    @SuppressLint({"SetJavaScriptEnabled", "AddJavascriptInterface"})
     @Override
     protected void onCreate(Bundle statoPrecedente) {
         super.onCreate(statoPrecedente);
@@ -71,25 +72,8 @@ public class LoginActivity extends Activity {
         attesa = findViewById(R.id.attesa);
         Button chiudi = findViewById(R.id.chiudi);
 
-        WebSettings impostazioni = vista.getSettings();
-        impostazioni.setJavaScriptEnabled(true);
-        impostazioni.setDomStorageEnabled(true);
-        impostazioni.setDatabaseEnabled(true);
-        // Il pizzico per ingrandire: in vista PC il testo e' piccolo, e senza
-        // questo non c'e' modo di leggerlo.
-        impostazioni.setSupportZoom(true);
-        impostazioni.setBuiltInZoomControls(true);
-        impostazioni.setDisplayZoomControls(false);
-        // Senza, il viewport largo non entra nello schermo e la pagina risulta
-        // tagliata a destra.
-        impostazioni.setLoadWithOverviewMode(true);
-        // Senza, il flusso OAuth si interrompe a meta'.
-        CookieManager.getInstance().setAcceptCookie(true);
-        CookieManager.getInstance().setAcceptThirdPartyCookies(vista, true);
-
-        // Google blocca il login se lo user-agent contiene "wv": lo si toglie.
-        String ua = impostazioni.getUserAgentString();
-        uaMobile = VistaBrowser.pulisci(ua);
+        configura(vista);
+        uaMobile = VistaBrowser.pulisci(vista.getSettings().getUserAgentString());
 
         vista.setWebViewClient(new WebViewClient() {
             @Override
@@ -97,7 +81,7 @@ public class LoginActivity extends Activity {
                 attesa.setVisibility(View.VISIBLE);
                 // Il viewport va forzato a ogni pagina: il login passa da piu'
                 // domini (Pavo, Google), e ognuno porta il suo.
-                applicaVista();
+                applicaVista(v);
                 cercaToken();
             }
 
@@ -105,14 +89,25 @@ public class LoginActivity extends Activity {
             public void onPageFinished(WebView v, String url) {
                 attesa.setVisibility(View.GONE);
                 stato.setText(getString(R.string.login_in_corso, url));
-                // Anche qui: a inizio pagina il documento puo' non essere
-                // ancora pronto a ricevere il viewport.
-                applicaVista();
+                applicaVista(v);
                 cercaToken();
             }
         });
 
-        vista.setWebChromeClient(new WebChromeClient());
+        vista.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onCreateWindow(WebView padre, boolean dialogo,
+                                          boolean gestoUtente, Message messaggio) {
+                apriPopup(messaggio);
+                return true;
+            }
+
+            @Override
+            public void onCloseWindow(WebView finestra) {
+                chiudiPopup();
+            }
+        });
+
         vista.addJavascriptInterface(new Ponte(), "pavoPonte");
 
         Switch desktop = findViewById(R.id.desktop);
@@ -136,45 +131,136 @@ public class LoginActivity extends Activity {
         }
         // Prima di caricare: lo user-agent deve essere gia' quello giusto,
         // altrimenti il sito rimanda alla pagina di scaricamento dell'app.
-        applicaVista();
+        applicaVista(vista);
         vista.loadUrl(AVVIO);
+    }
+
+    /**
+     * Le impostazioni che servono a ogni finestra, principale o popup.
+     *
+     * {@code setSupportMultipleWindows} e
+     * {@code setJavaScriptCanOpenWindowsAutomatically} sono quelli che rendono
+     * possibile il popup di Google. Senza, il pulsante non fa nulla.
+     */
+    private void configura(WebView v) {
+        WebSettings imp = v.getSettings();
+        imp.setJavaScriptEnabled(true);
+        imp.setDomStorageEnabled(true);
+        imp.setDatabaseEnabled(true);
+        // Il pizzico per ingrandire: in vista PC il testo e' piccolo.
+        imp.setSupportZoom(true);
+        imp.setBuiltInZoomControls(true);
+        imp.setDisplayZoomControls(false);
+        imp.setLoadWithOverviewMode(true);
+        imp.setSupportMultipleWindows(true);
+        imp.setJavaScriptCanOpenWindowsAutomatically(true);
+        // Senza, il flusso OAuth si interrompe a meta'.
+        CookieManager.getInstance().setAcceptCookie(true);
+        CookieManager.getInstance().setAcceptThirdPartyCookies(v, true);
     }
 
     /**
      * Presenta la pagina come su un computer.
      *
      * Lo user-agent da solo non basta: la pagina decide il layout dalla
-     * larghezza del viewport, e su un telefono e' stretta, quindi il sito mostra
-     * comunque la versione mobile. Si impone una larghezza da portatile e si
-     * lascia che il WebView rimpicciolisca il risultato.
-     *
-     * Il viewport viene riscritto a ogni pagina, perche' il login attraversa
-     * piu' domini e ognuno porta il suo.
+     * larghezza del viewport, e su un telefono e' stretta. Si impone una
+     * larghezza da portatile e si lascia che il WebView rimpicciolisca il
+     * risultato per farlo stare nello schermo.
      */
-    private void applicaVista() {
-        if (vista == null) {
+    private void applicaVista(WebView v) {
+        if (v == null) {
             return;
         }
-        WebSettings impostazioni = vista.getSettings();
+        WebSettings imp = v.getSettings();
 
         if (!sessione.desktop()) {
-            impostazioni.setUserAgentString(uaMobile);
-            impostazioni.setUseWideViewPort(false);
-            vista.evaluateJavascript(VistaBrowser.scriptViewportMobile(), null);
+            imp.setUserAgentString(uaMobile);
+            imp.setUseWideViewPort(false);
+            v.evaluateJavascript(VistaBrowser.scriptViewportMobile(), null);
             return;
         }
 
-        impostazioni.setUserAgentString(VistaBrowser.UA_DESKTOP);
-        impostazioni.setUseWideViewPort(true);
+        imp.setUserAgentString(VistaBrowser.UA_DESKTOP);
+        imp.setUseWideViewPort(true);
+        v.evaluateJavascript(VistaBrowser.scriptViewport(), null);
+    }
 
-        vista.evaluateJavascript(VistaBrowser.scriptViewport(), null);
+    /**
+     * Apre il popup di Google in una finestra dentro l'app.
+     *
+     * La finestra nuova nasce vuota: e' il browser a riempirla con l'indirizzo
+     * che il sito ha chiesto di aprire. Va quindi mostrata prima di consegnarla,
+     * altrimenti non ha dove disegnare.
+     */
+    private void apriPopup(Message messaggio) {
+        chiudiPopup();
+
+        WebView nuova = new WebView(this);
+        configura(nuova);
+        nuova.addJavascriptInterface(new Ponte(), "pavoPonte");
+
+        nuova.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageFinished(WebView v, String url) {
+                applicaVista(v);
+                // Quando il popup torna su Pavo, il consenso e' finito. La
+                // memoria del browser e' condivisa fra le due finestre, quindi
+                // basta ricaricare la principale: si trova gia' dentro, e il
+                // token compare nel localStorage.
+                if (url != null && url.contains("pavo-ai.work")) {
+                    chiudiPopup();
+                    vista.reload();
+                }
+            }
+        });
+
+        nuova.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onCreateWindow(WebView padre, boolean dialogo,
+                                          boolean gestoUtente, Message m) {
+                apriPopup(m);
+                return true;
+            }
+
+            @Override
+            public void onCloseWindow(WebView finestra) {
+                chiudiPopup();
+            }
+        });
+
+        finestraPopup = new Dialog(this,
+                android.R.style.Theme_Material_Light_NoActionBar);
+        finestraPopup.setContentView(nuova, new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+        finestraPopup.setOnDismissListener(d -> {
+            if (popup != null) {
+                popup.destroy();
+                popup = null;
+            }
+        });
+        stato.setText(R.string.login_google);
+        finestraPopup.show();
+
+        popup = nuova;
+        WebView.WebViewTransport trasporto = (WebView.WebViewTransport) messaggio.obj;
+        trasporto.setWebView(nuova);
+        messaggio.sendToTarget();
+    }
+
+    private void chiudiPopup() {
+        if (finestraPopup != null) {
+            finestraPopup.dismiss();
+            finestraPopup = null;
+        }
     }
 
     /**
      * Cerca il token nel localStorage.
      *
-     * Il token lo scrive l'app di Pavo dopo il login, quindi si prova a ogni
-     * cambio di pagina. Quando c'e', lo salviamo e chiudiamo.
+     * Il token lo scrive Pavo dopo il login, quindi si prova a ogni cambio di
+     * pagina. Le due finestre condividono la memoria, quindi va bene provarci
+     * anche dalla principale mentre il popup e' aperto.
      */
     private void cercaToken() {
         if (salvato || vista == null) {
@@ -203,8 +289,9 @@ public class LoginActivity extends Activity {
             return;
         }
         salvato = true;
+        chiudiPopup();
         sessione.salvaToken(token);
-        // La sessione resta nel profilo del WebView: cosi' al prossimo avvio
+        // La sessione resta nella memoria del browser: cosi' al prossimo avvio
         // l'utente e' gia' dentro e non deve rifare il login.
         CookieManager.getInstance().flush();
 
@@ -220,7 +307,7 @@ public class LoginActivity extends Activity {
     /**
      * Ponte per il caso in cui l'utente preferisca incollare il token a mano.
      *
-     * Serve quando il provider di login rifiuta il WebView incorporato: si fa
+     * Serve quando il provider di login rifiuta il browser incorporato: si fa
      * il login in un browser vero, si copia il token, e si passa da qui.
      */
     private final class Ponte {
@@ -234,10 +321,20 @@ public class LoginActivity extends Activity {
 
     @Override
     public void onBackPressed() {
+        if (finestraPopup != null) {
+            chiudiPopup();
+            return;
+        }
         if (vista != null && vista.canGoBack()) {
             vista.goBack();
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        chiudiPopup();
+        super.onDestroy();
     }
 }

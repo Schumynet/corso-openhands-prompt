@@ -21,7 +21,7 @@ dell'app, e il server resta acceso in background.
 
 ## Come si usa
 
-1. Installa l'APK sul telefono (`adb install pavo-mcp-1.1.0.apk`, oppure apri
+1. Installa l'APK sul telefono (`adb install pavo-mcp-1.2.0.apk`, oppure apri
    il file sul telefono e consenti l'installazione da sorgenti sconosciute).
 2. Apri l'app, tocca **Entra in Pavo**.
 3. Fai il login nella pagina che compare. L'app riconosce il token e chiude da
@@ -33,6 +33,12 @@ della sua app invece di far entrare. Con la vista da PC si entra.
 
 L'interruttore **Vista da computer** in basso la spegne, ma lascialo acceso. Il
 pizzico per ingrandire funziona in entrambi i casi.
+
+L'accesso si fa con Google. Il pulsante apre una **finestra dentro l'app**, e il
+consenso va completato lì. Serve: la libreria di Google apre il consenso in una
+finestra nuova, e senza una finestra che la ospiti il tocco non fa nulla. Se
+Google mostrasse un avviso di sicurezza, spegni e riaccendi l'interruttore
+**Vista da computer** e riprova.
 
 4. Tocca **Accendi il server**.
 5. La schermata mostra l'indirizzo e il token di accoppiamento. Tocca **Copia
