@@ -21,6 +21,10 @@ dell'app, e il server resta acceso in background.
 
 ## Come si usa
 
+0. **Disinstalla la versione vecchia.** Ogni volta che ricompilo, la chiave
+   di firma cambia, e Android rifiuta l'installazione sopra una chiave
+   diversa. Se non disinstalli, l'installazione fallisce e sembra che
+   l'app non funzioni.
 1. Installa l'APK sul telefono (`adb install pavo-mcp-1.3.0.apk`, oppure apri
    il file sul telefono e consenti l'installazione da sorgenti sconosciute).
 2. Apri l'app, tocca **Entra in Pavo**.
