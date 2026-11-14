@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,8 +74,12 @@ public class LoginActivity extends Activity {
         attesa = findViewById(R.id.attesa);
         Button chiudi = findViewById(R.id.chiudi);
 
-        configura(vista);
+        // Lo user-agent si calcola e si applica subito, prima di caricare
+        // qualunque cosa. Google decide all'istante: una richiesta partita con
+        // lo user-agent del telefono viene rifiutata senza appello, e non
+        // basta correggerla dopo.
         uaMobile = VistaBrowser.pulisci(vista.getSettings().getUserAgentString());
+        configura(vista);
 
         vista.setWebViewClient(new WebViewClient() {
             @Override
@@ -154,6 +160,11 @@ public class LoginActivity extends Activity {
         imp.setLoadWithOverviewMode(true);
         imp.setSupportMultipleWindows(true);
         imp.setJavaScriptCanOpenWindowsAutomatically(true);
+        // Lo user-agent si imposta QUI, non solo a pagina caricata: la prima
+        // richiesta parte prima di qualunque callback, e Google la giudica
+        // subito. Con lo user-agent del telefono la rifiuta.
+        imp.setUseWideViewPort(sessione.desktop());
+        imp.setUserAgentString(VistaBrowser.userAgent(sessione.desktop(), uaMobile));
         // Senza, il flusso OAuth si interrompe a meta'.
         CookieManager.getInstance().setAcceptCookie(true);
         CookieManager.getInstance().setAcceptThirdPartyCookies(v, true);
@@ -203,14 +214,6 @@ public class LoginActivity extends Activity {
             @Override
             public void onPageFinished(WebView v, String url) {
                 applicaVista(v);
-                // Quando il popup torna su Pavo, il consenso e' finito. La
-                // memoria del browser e' condivisa fra le due finestre, quindi
-                // basta ricaricare la principale: si trova gia' dentro, e il
-                // token compare nel localStorage.
-                if (url != null && url.contains("pavo-ai.work")) {
-                    chiudiPopup();
-                    vista.reload();
-                }
             }
         });
 
@@ -241,6 +244,7 @@ public class LoginActivity extends Activity {
         });
         stato.setText(R.string.login_google);
         finestraPopup.show();
+        sorveglia();
 
         popup = nuova;
         WebView.WebViewTransport trasporto = (WebView.WebViewTransport) messaggio.obj;
@@ -253,6 +257,35 @@ public class LoginActivity extends Activity {
             finestraPopup.dismiss();
             finestraPopup = null;
         }
+    }
+
+    /**
+     * Sorveglia il popup di Google finche' non ha finito.
+     *
+     * Con la libreria di Google il popup NON torna sulla pagina di Pavo: si
+     * chiude da solo e consegna il risultato alla pagina principale, che poi
+     * chiama il server e scrive il token. Quindi non c'e' una pagina da
+     * aspettare, e non si ricarica: ricaricare proprio mentre arriva il
+     * consenso interromperebbe il login. Si guarda solo il token, a intervalli,
+     * per un tempo finito.
+     */
+    private void sorveglia() {
+        final Handler orologio = new Handler(Looper.getMainLooper());
+        final int[] giri = {0};
+
+        Runnable controllo = new Runnable() {
+            @Override
+            public void run() {
+                if (salvato || isFinishing()) {
+                    return;
+                }
+                cercaToken();
+                if (++giri[0] < 480) {
+                    orologio.postDelayed(this, 500);
+                }
+            }
+        };
+        orologio.postDelayed(controllo, 1000);
     }
 
     /**

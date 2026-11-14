@@ -27,6 +27,23 @@ public final class VistaBrowser {
     public static final int LARGHEZZA_PC = 1280;
 
     /**
+     * Lo user-agent da usare, dati la scelta dell'utente e quello del telefono.
+     *
+     * Sta qui, e non dentro la schermata, perche' e' la decisione che ha gia'
+     * sbagliato una volta: il popup di Google riceveva lo user-agent del
+     * telefono e Google rifiutava il login. Cosi' si collauda senza Android.
+     *
+     * `uaMobile` vuoto significa che non c'e' un ripiego: meglio lo user-agent
+     * da PC, che almeno non contiene "wv".
+     */
+    public static String userAgent(boolean desktop, String uaMobile) {
+        if (desktop) {
+            return UA_DESKTOP;
+        }
+        return (uaMobile == null || uaMobile.trim().isEmpty()) ? UA_DESKTOP : uaMobile;
+    }
+
+    /**
      * Ripulisce lo user-agent del WebView.
      *
      * Toglie "wv", che segnala una WebView e fa rifiutare il login a Google, e

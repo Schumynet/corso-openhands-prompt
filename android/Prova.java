@@ -430,6 +430,31 @@ public class Prova {
         verifica("lo script per telefono rimette la larghezza del dispositivo",
                 dev.schumynet.pavo.core.VistaBrowser.scriptViewportMobile()
                         .contains("width=device-width"));
+
+        // La scelta dello user-agent e' la parte che ha gia' sbagliato: il
+        // popup di Google riceveva quello del telefono, e Google rifiutava il
+        // login. Qui si blocca quella regressione.
+        String uaTel = dev.schumynet.pavo.core.VistaBrowser.pulisci(
+                "Mozilla/5.0 (Linux; Android 13; SM-G991B Build/TP1A; wv) "
+                        + "AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 "
+                        + "Chrome/124.0.0.0 Mobile Safari/537.36");
+        String sceltoPc = dev.schumynet.pavo.core.VistaBrowser.userAgent(true, uaTel);
+        String sceltoTel = dev.schumynet.pavo.core.VistaBrowser.userAgent(false, uaTel);
+        verifica("con la vista da PC si usa lo user-agent da PC",
+                sceltoPc.equals(dev.schumynet.pavo.core.VistaBrowser.UA_DESKTOP));
+        verifica("con la vista da PC non si usa quello del telefono",
+                !sceltoPc.equals(uaTel));
+        verifica("lo user-agent scelto non contiene 'wv'",
+                !sceltoPc.contains("; wv"));
+        verifica("senza vista da PC si usa quello del telefono, ripulito",
+                sceltoTel.equals(uaTel));
+        verifica("anche il ripiego non contiene 'wv'", !sceltoTel.contains("; wv"));
+        verifica("senza ripiego si usa comunque quello da PC",
+                dev.schumynet.pavo.core.VistaBrowser.userAgent(false, "")
+                        .equals(dev.schumynet.pavo.core.VistaBrowser.UA_DESKTOP));
+        verifica("senza ripiego non si resta senza user-agent",
+                dev.schumynet.pavo.core.VistaBrowser.userAgent(false, null)
+                        .equals(dev.schumynet.pavo.core.VistaBrowser.UA_DESKTOP));
     }
 
     private static String accorcia(String s, int n) {
