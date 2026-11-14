@@ -13,9 +13,11 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import dev.schumynet.pavo.core.MiniJson;
+import dev.schumynet.pavo.core.VistaBrowser;
 
 import java.util.Map;
 
@@ -26,18 +28,24 @@ import java.util.Map;
  * {@code localStorage}, lo leggiamo e lo salviamo. La password resta nel
  * WebView: non la vediamo e non la conserviamo.
  *
+ * La pagina si presenta come su un computer. Serve: da telefono Pavo mostra la
+ * versione mobile, che rimanda alla pagina di scaricamento della sua app invece
+ * di far entrare. Con la vista da PC si entra direttamente.
+ *
+ * Lo user-agent da solo non basta. La pagina sceglie il layout dalla larghezza
+ * del viewport, e su un telefono quella larghezza e' stretta: il sito capisce
+ * comunque di essere su un telefono. Quindi si impone anche una larghezza da
+ * portatile, e il WebView rimpicciolisce il risultato per farlo stare nello
+ * schermo.
+ *
  * Due cose che rompono l'OAuth dentro una WebView, e come le affrontiamo:
  *
- * 1. Google rifiuta il login se lo user-agent contiene "wv" (WebView). Quindi
- *    ci presentiamo come Chrome. Non e' un trucco per aggirare una difesa: e'
- *    quello che fa qualunque app che incapsula un browser, ed e' la stessa
- *    pagina che l'utente vedrebbe in Chrome.
+ * 1. Google rifiuta il login se lo user-agent contiene "wv" (WebView).
  * 2. I cookie di terze parti servono al flusso OAuth. Senza, il login si
  *    interrompe a meta'.
  *
- * Resta il caso in cui Google non gradisce comunque il WebView incorporato: in
- * quel caso si entra con email e password, oppure si fa il login in Chrome e si
- * incolla il token. L'app lo dice, invece di fallire in silenzio.
+ * L'interruttore in basso spegne la vista da PC, se un passaggio del login si
+ * comportasse male in quella modalita'.
  */
 public class LoginActivity extends Activity {
 
@@ -46,10 +54,11 @@ public class LoginActivity extends Activity {
     private ProgressBar attesa;
     private Sessione sessione;
     private boolean salvato;
+    private String uaMobile;
 
     private static final String AVVIO = "https://app.pavo-ai.work/";
 
-    @SuppressLint({"SetJavaScriptEnabled", "AddJavascriptInterface"})
+@SuppressLint({"SetJavaScriptEnabled", "AddJavascriptInterface"})
     @Override
     protected void onCreate(Bundle statoPrecedente) {
         super.onCreate(statoPrecedente);
@@ -66,22 +75,29 @@ public class LoginActivity extends Activity {
         impostazioni.setJavaScriptEnabled(true);
         impostazioni.setDomStorageEnabled(true);
         impostazioni.setDatabaseEnabled(true);
+        // Il pizzico per ingrandire: in vista PC il testo e' piccolo, e senza
+        // questo non c'e' modo di leggerlo.
+        impostazioni.setSupportZoom(true);
+        impostazioni.setBuiltInZoomControls(true);
+        impostazioni.setDisplayZoomControls(false);
+        // Senza, il viewport largo non entra nello schermo e la pagina risulta
+        // tagliata a destra.
+        impostazioni.setLoadWithOverviewMode(true);
         // Senza, il flusso OAuth si interrompe a meta'.
         CookieManager.getInstance().setAcceptCookie(true);
         CookieManager.getInstance().setAcceptThirdPartyCookies(vista, true);
 
-        // Google blocca il login se lo user-agent contiene "wv". Ci presentiamo
-        // come Chrome: e' la stessa pagina che l'utente vedrebbe nel browser.
+        // Google blocca il login se lo user-agent contiene "wv": lo si toglie.
         String ua = impostazioni.getUserAgentString();
-        if (ua != null) {
-            impostazioni.setUserAgentString(ua.replace("; wv", "")
-                    .replaceAll("Version/\\d+\\.\\d+ ", ""));
-        }
+        uaMobile = VistaBrowser.pulisci(ua);
 
         vista.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageStarted(WebView v, String url, Bitmap icona) {
                 attesa.setVisibility(View.VISIBLE);
+                // Il viewport va forzato a ogni pagina: il login passa da piu'
+                // domini (Pavo, Google), e ognuno porta il suo.
+                applicaVista();
                 cercaToken();
             }
 
@@ -89,12 +105,23 @@ public class LoginActivity extends Activity {
             public void onPageFinished(WebView v, String url) {
                 attesa.setVisibility(View.GONE);
                 stato.setText(getString(R.string.login_in_corso, url));
+                // Anche qui: a inizio pagina il documento puo' non essere
+                // ancora pronto a ricevere il viewport.
+                applicaVista();
                 cercaToken();
             }
         });
 
         vista.setWebChromeClient(new WebChromeClient());
         vista.addJavascriptInterface(new Ponte(), "pavoPonte");
+
+        Switch desktop = findViewById(R.id.desktop);
+        desktop.setChecked(sessione.desktop());
+        desktop.setOnCheckedChangeListener((v, attivo) -> {
+            sessione.salvaDesktop(attivo);
+            // Si ricarica da capo: la scelta non si applica a pagina in corso.
+            vista.reload();
+        });
 
         chiudi.setOnClickListener(v -> {
             if (!sessione.haToken()) {
@@ -107,7 +134,40 @@ public class LoginActivity extends Activity {
         if (sessione.haToken()) {
             stato.setText(R.string.login_gia_fatto);
         }
+        // Prima di caricare: lo user-agent deve essere gia' quello giusto,
+        // altrimenti il sito rimanda alla pagina di scaricamento dell'app.
+        applicaVista();
         vista.loadUrl(AVVIO);
+    }
+
+    /**
+     * Presenta la pagina come su un computer.
+     *
+     * Lo user-agent da solo non basta: la pagina decide il layout dalla
+     * larghezza del viewport, e su un telefono e' stretta, quindi il sito mostra
+     * comunque la versione mobile. Si impone una larghezza da portatile e si
+     * lascia che il WebView rimpicciolisca il risultato.
+     *
+     * Il viewport viene riscritto a ogni pagina, perche' il login attraversa
+     * piu' domini e ognuno porta il suo.
+     */
+    private void applicaVista() {
+        if (vista == null) {
+            return;
+        }
+        WebSettings impostazioni = vista.getSettings();
+
+        if (!sessione.desktop()) {
+            impostazioni.setUserAgentString(uaMobile);
+            impostazioni.setUseWideViewPort(false);
+            vista.evaluateJavascript(VistaBrowser.scriptViewportMobile(), null);
+            return;
+        }
+
+        impostazioni.setUserAgentString(VistaBrowser.UA_DESKTOP);
+        impostazioni.setUseWideViewPort(true);
+
+        vista.evaluateJavascript(VistaBrowser.scriptViewport(), null);
     }
 
     /**
@@ -161,7 +221,7 @@ public class LoginActivity extends Activity {
      * Ponte per il caso in cui l'utente preferisca incollare il token a mano.
      *
      * Serve quando il provider di login rifiuta il WebView incorporato: si fa
-     * il login in Chrome, si copia il token, e si passa da qui.
+     * il login in un browser vero, si copia il token, e si passa da qui.
      */
     private final class Ponte {
         @JavascriptInterface

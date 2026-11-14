@@ -32,9 +32,13 @@ public class Prova {
         System.out.println("=== 3. Server MCP (socket vero) ===");
         provaMcp();
 
+        System.out.println();
+        System.out.println("=== 4. Vista da PC ===");
+        provaVistaPc();
+
         if ("tutto".equals(modalita) || "api".equals(modalita)) {
             System.out.println();
-            System.out.println("=== 4. Client contro l'API vera ===");
+            System.out.println("=== 5. Client contro l'API vera ===");
             provaApi();
         }
 
@@ -371,6 +375,61 @@ public class Prova {
             rifiutato = true;
         }
         verifica("token falso viene rifiutato", rifiutato);
+    }
+
+    // --- 4. Vista da PC ------------------------------------------------------
+
+    /**
+     * La vista da PC e' la parte che ha gia' fallito una volta in silenzio:
+     * con "Android" dentro lo user-agent, Pavo mostrava la versione mobile e
+     * rimandava alla pagina di scaricamento della sua app, senza modo di
+     * entrare. Qui si controlla che non possa succedere di nuovo.
+     */
+    private static void provaVistaPc() {
+        // Pavo decide cosi': cerca le parole dei telefoni nello user-agent.
+        // La stessa prova, rifatta qui.
+        String uaPc = dev.schumynet.pavo.core.VistaBrowser.UA_DESKTOP;
+        System.out.println("  user-agent: " + uaPc);
+        verifica("lo user-agent da PC non contiene Android",
+                !uaPc.contains("Android"));
+        verifica("lo user-agent da PC non contiene iPhone/iPad/iPod",
+                !uaPc.contains("iPhone") && !uaPc.contains("iPad")
+                        && !uaPc.contains("iPod"));
+        verifica("Pavo non lo scambia per un telefono",
+                !dev.schumynet.pavo.core.VistaBrowser.sembraTelefono(uaPc));
+        verifica("lo user-agent da PC sembra Chrome da Windows",
+                uaPc.contains("Windows NT") && uaPc.contains("Chrome/"));
+
+        // Lo user-agent di un WebView Android deve risultare un telefono: se
+        // mai lo si usasse, la prova lo direbbe.
+        String uaWebView = "Mozilla/5.0 (Linux; Android 13; SM-G991B Build/TP1A; wv) "
+                + "AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 "
+                + "Chrome/124.0.0.0 Mobile Safari/537.36";
+        verifica("un WebView Android viene riconosciuto come telefono",
+                dev.schumynet.pavo.core.VistaBrowser.sembraTelefono(uaWebView));
+
+        // La pulizia deve togliere "wv" (Google rifiuta il login altrimenti)
+        // senza intaccare il resto.
+        String pulito = dev.schumynet.pavo.core.VistaBrowser.pulisci(uaWebView);
+        verifica("la pulizia toglie 'wv'", !pulito.contains("; wv"));
+        verifica("la pulizia toglie 'Version/x.y'", !pulito.contains("Version/"));
+        verifica("la pulizia non tocca il resto",
+                pulito.contains("Chrome/124.0.0.0") && pulito.contains("Android"));
+
+        // Il viewport: senza larghezza da PC, la pagina resta mobile anche con
+        // lo user-agent giusto.
+        String script = dev.schumynet.pavo.core.VistaBrowser.scriptViewport();
+        verifica("lo script impone la larghezza da PC",
+                script.contains("width=1280"));
+        verifica("lo script crea il viewport se manca",
+                script.contains("createElement('meta')"));
+        verifica("lo script lascia ingrandire",
+                script.contains("user-scalable=yes"));
+        verifica("lo script non fissa un ingrandimento sbagliato",
+                !script.contains("initial-scale=0.25"));
+        verifica("lo script per telefono rimette la larghezza del dispositivo",
+                dev.schumynet.pavo.core.VistaBrowser.scriptViewportMobile()
+                        .contains("width=device-width"));
     }
 
     private static String accorcia(String s, int n) {

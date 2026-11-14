@@ -21,6 +21,7 @@ public final class Sessione implements PavoClient.TokenProvider {
     private static final String CHIAVE_ACCOPPIAMENTO = "token_accoppiamento";
     private static final String CHIAVE_PORTA = "porta";
     private static final String CHIAVE_RETE_LOCALE = "rete_locale";
+    private static final String CHIAVE_DESKTOP = "modalita_desktop";
 
     public static final int PORTA_PREDEFINITA = 8787;
 
@@ -79,4 +80,20 @@ public final class Sessione implements PavoClient.TokenProvider {
     public void salvaReteLocale(boolean v) {
         prefs.edit().putBoolean(CHIAVE_RETE_LOCALE, v).apply();
     }
+
+    /**
+     * true = il WebView di login si presenta come un browser da PC.
+     *
+     * Di serie e' acceso, e deve restarlo: da telefono Pavo mostra la versione
+     * mobile, che rimanda alla pagina di scaricamento della sua app invece di
+     * far entrare.
+     */
+    public boolean desktop() {
+        return prefs.getBoolean(CHIAVE_DESKTOP, true);
+    }
+
+    public void salvaDesktop(boolean v) {
+        prefs.edit().putBoolean(CHIAVE_DESKTOP, v).apply();
+    }
+
 }

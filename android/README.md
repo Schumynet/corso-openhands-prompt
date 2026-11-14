@@ -3,9 +3,11 @@
 Un'app Android che fa due cose:
 
 1. **Apre il browser dentro l'app** (WebView) e ti fa entrare in Pavo. La
-   password la digiti solo tu, nella pagina vera di Pavo: l'app non la vede e
-   non la conserva. Quello che salva è il token di sessione che Pavo scrive
-   dopo il login.
+   pagina si presenta **come sul computer**, non come sul telefono: user-agent
+   da PC, viewport largo da portatile, e il pizzico per ingrandire. La password
+   la digiti solo tu, nella pagina vera di Pavo: l'app non la vede e non la
+   conserva. Quello che salva è il token di sessione che Pavo scrive dopo il
+   login.
 2. **Accende un server MCP** sul telefono, con 22 strumenti per usare la suite
    Pavo (Canvas, crediti, modelli, progetti, correzione di prompt). Il server
    ha un backend integrato: parla con l'API di Pavo lui stesso, quindi non
@@ -19,11 +21,19 @@ dell'app, e il server resta acceso in background.
 
 ## Come si usa
 
-1. Installa l'APK sul telefono (`adb install pavo-mcp-1.0.0.apk`, oppure apri
+1. Installa l'APK sul telefono (`adb install pavo-mcp-1.1.0.apk`, oppure apri
    il file sul telefono e consenti l'installazione da sorgenti sconosciute).
 2. Apri l'app, tocca **Entra in Pavo**.
 3. Fai il login nella pagina che compare. L'app riconosce il token e chiude da
    sola.
+
+La pagina si apre in **vista da computer**. Serve, non è un'opzione: da
+telefono Pavo mostra la versione mobile, che rimanda alla pagina di scaricamento
+della sua app invece di far entrare. Con la vista da PC si entra.
+
+L'interruttore **Vista da computer** in basso la spegne, ma lascialo acceso. Il
+pizzico per ingrandire funziona in entrambi i casi.
+
 4. Tocca **Accendi il server**.
 5. La schermata mostra l'indirizzo e il token di accoppiamento. Tocca **Copia
    configurazione** e incolla il risultato nel tuo client MCP.
